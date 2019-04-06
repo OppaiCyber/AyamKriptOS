@@ -5,6 +5,7 @@ import json
 import locale
 import os
 import sys
+import requests_cache
 
 # Define Function
 # get_args :: Get Argument after Command
@@ -45,6 +46,7 @@ async def price_command(client, message):
     coinF = get_args(message)
     try:
     	coinS = coinF[1].upper()
+    	requests_cache.install_cache('price_cache', backend='sqlite', expire_after=300)
     	get = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms='+coinS+'&tsyms=BTC,USD,IDR')
     	data = get.json()
     	btc = data['DISPLAY'][coinS]['BTC']
