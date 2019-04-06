@@ -28,23 +28,26 @@ botid = config['tg_info']['bot_api']
 app = Client(botid)
 
 # Start Command :: First Command to get Executed
-app.on_message(Filters.command("start"))
-def start_command(client, message):
-    message.reply("Selamat datang di AyamKripto\nGunakan /help untuk mendapatkan bantuan")
+@app.on_message(Filters.command("start"))
+async def start_command(client, message):
+    await message.reply("Selamat datang di AyamKripto\nGunakan /help untuk mendapatkan bantuan")
 
 # Ping Command :: Test Bot Connection
-app.on_message(Filters.command("ping"))
-def ping_command(client, message):
-    message.reply("🏓 Pong!")
+@app.on_message(Filters.command("ping"))
+async def ping_command(client, message):
+    await message.reply("🏓 Pong!")
 
 # Price Command :: Check Cryptocurrency Price via CryptoCompare API 
-app.on_message(Filters.command("p"))
-def price_command(client, message):
+@app.on_message(Filters.command("p"))
+async def price_command(client, message):
     coinF = get_args(message)
     coinS = coinF[1].upper()
-    get = requests.get('https://min-api.cryptocompare.com/data/price?fsym='+coinS+'&tsyms=BTC,USD,IDR')
+    get = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms='+coinS+'&tsyms=BTC,USD,IDR')
     data = get.json()
-    idrF = rupiah_format(data['idr'])
-    message.reply(idrF)
-    
+    btc = data['DISPLAY'][coinS]['BTC']
+    idr = data['DISPLAY'][coinS]['IDR']
+    usd = data['DISPLAY'][coinS]['USD']
+    text = "`"+coinS+" : "+usd['PRICE']+" | "+usd['CHANGEPCTDAY']+"%\n"+idr['PRICE']+" | "+idr['CHANGEPCTDAY']+"%\n"+btc['PRICE']+" | "+btc['CHANGEPCTDAY']+"%`"
+    await message.reply(text)
+
 app.run()
