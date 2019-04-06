@@ -43,20 +43,22 @@ async def ping_command(client, message):
 @app.on_message(Filters.command("p"))
 async def price_command(client, message):
     coinF = get_args(message)
-    coinS = coinF[1].upper()
-    get = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms='+coinS+'&tsyms=BTC,USD,IDR')
-    data = get.json()
-    btc = data['DISPLAY'][coinS]['BTC']
-    idr = data['DISPLAY'][coinS]['IDR']
-    usd = data['DISPLAY'][coinS]['USD']
-    text = "`"+coinS+" : "+usd['PRICE']+" | "+usd['CHANGEPCTDAY']+"%\n"+idr['PRICE']+" | "+idr['CHANGEPCTDAY']+"%\n"+btc['PRICE']+" | "+btc['CHANGEPCTDAY']+"%`"
+    try:
+    	coinS = coinF[1].upper()
+    	get = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms='+coinS+'&tsyms=BTC,USD,IDR')
+    	data = get.json()
+    	btc = data['DISPLAY'][coinS]['BTC']
+    	idr = data['DISPLAY'][coinS]['IDR']
+    	usd = data['DISPLAY'][coinS]['USD']
+    	text = "`"+coinS+" : "+usd['PRICE']+" | "+usd['CHANGEPCTDAY']+"%\n"+idr['PRICE']+" | "+idr['CHANGEPCTDAY']+"%\n"+btc['PRICE']+" | "+btc['CHANGEPCTDAY']+"%`"
+    except:
+    	text = "Command Usage : /p coin"
     await message.reply(text)
 
 @app.on_message(Filters.command("restart"))
 async def restart_command(client, message):
     id = str(message.from_user.id)
     print ("[ INFO ] BOT RESTART")
-    message.reply("[ INFO ] BOT RESTARTING")
     os.system('cls')  # For Windows
     os.system('clear')  # For Linux/OS X
     python = sys.executable
