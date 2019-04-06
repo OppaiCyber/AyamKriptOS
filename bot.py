@@ -57,14 +57,32 @@ async def price_command(client, message):
     	text = "Command Usage : /p coin"
     await message.reply(text)
 
+# Price Command :: Check Cryptocurrency Price via CryptoCompare API 
+@app.on_message(Filters.command("calc"))
+async def calc_command(client, message):
+    coinF = get_args(message)
+    try:
+    	coinS = coinF[1].upper()
+    	coinAM = coinF[2]
+    	requests_cache.install_cache('price_cache', backend='sqlite', expire_after=300)
+    	get = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms='+coinS+'&tsyms=BTC,USD,IDR')
+    	data = get.json()
+    	btc = data['RAW'][coinS]['BTC']['PRICE'] * int(coinAM)
+    	btc = "{:.8f}".format(float(btc)) # Special for BTC to Change Scientific Notation to Decimal 
+    	idr = data['RAW'][coinS]['IDR']['PRICE'] * int(coinAM)
+    	usd = data['RAW'][coinS]['USD']['PRICE'] * int(coinAM)
+    	text = "CALC : "+coinS+"\n`USD : $"+ str(round(usd, 3)) + "\nIDR : "+ str(rupiah_format(idr, True, 0)) + "\nBTC : " + str(btc) + "`"
+    except:
+    	text = "Command Usage : /calc coin amount"
+    await message.reply(text)
+
+# Restart Command :: Restart bot to get new edited things
 @app.on_message(Filters.command("restart"))
 async def restart_command(client, message):
-    id = str(message.from_user.id)
-    print ("[ INFO ] BOT RESTART")
+    await message.reply("[ INFO ] BOT RESTARTED")
     os.system('cls')  # For Windows
     os.system('clear')  # For Linux/OS X
     python = sys.executable
     os.execl(python, python, *sys.argv)
-    await message.reply("[ INFO ] BOT RESTARTED")
 
 app.run()
