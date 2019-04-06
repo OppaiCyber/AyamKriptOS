@@ -106,3 +106,4 @@ venv.bak/
 # pyrogram generated
 config.ini
 *.session
+config.ini.example
