@@ -3,6 +3,8 @@ import configparser
 import requests
 import json
 import locale
+import os
+import sys
 
 # Define Function
 # get_args :: Get Argument after Command
@@ -49,5 +51,16 @@ async def price_command(client, message):
     usd = data['DISPLAY'][coinS]['USD']
     text = "`"+coinS+" : "+usd['PRICE']+" | "+usd['CHANGEPCTDAY']+"%\n"+idr['PRICE']+" | "+idr['CHANGEPCTDAY']+"%\n"+btc['PRICE']+" | "+btc['CHANGEPCTDAY']+"%`"
     await message.reply(text)
+
+@app.on_message(Filters.command("restart"))
+async def restart_command(client, message):
+    id = str(message.from_user.id)
+    print ("[ INFO ] BOT RESTART")
+    message.reply("[ INFO ] BOT RESTARTING")
+    os.system('cls')  # For Windows
+    os.system('clear')  # For Linux/OS X
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
+    await message.reply("[ INFO ] BOT RESTARTED")
 
 app.run()
