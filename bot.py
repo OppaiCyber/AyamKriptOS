@@ -15,12 +15,14 @@ def get_args(msg):
 	return textSP
 
 # rupiah_format :: Change Numeric into IDR Format
-def rupiah_format(angka, with_prefix=False, desimal=2):
-    locale.setlocale(locale.LC_NUMERIC, 'IND')
-    rupiah = locale.format("%.*f", (desimal, angka), True)
-    if with_prefix:
-        return "Rp. {}".format(rupiah)
-    return rupiah
+def formatrupiah(uang):
+    y = str(uang)
+    if len(y) <= 3 :
+        return 'Rp ' + y     
+    else :
+        p = y[-3:]
+        q = y[:-3]
+        return   formatrupiah(q) + '.' + p
 
 # Get Bot API Key
 config = configparser.ConfigParser()
@@ -71,7 +73,7 @@ async def calc_command(client, message):
     	btc = "{:.8f}".format(float(btc)) # Special for BTC to Change Scientific Notation to Decimal 
     	idr = data['RAW'][coinS]['IDR']['PRICE'] * int(coinAM)
     	usd = data['RAW'][coinS]['USD']['PRICE'] * int(coinAM)
-    	text = "CALC : "+coinS+"\n`USD : $"+ str(round(usd, 3)) + "\nIDR : "+ str(rupiah_format(idr, True, 0)) + "\nBTC : " + str(btc) + "`"
+    	text = "CALC : "+coinS+"\n`USD : $"+ str(round(usd, 3)) + "\nIDR : "+ str(formatrupiah(idr)) + "\nBTC : " + str(btc) + "`"
     except:
     	text = "Command Usage : /calc coin amount"
     await message.reply(text)
