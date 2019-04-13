@@ -59,7 +59,7 @@ async def price_command(client, message):
     	text = "Command Usage : /p coin"
     await message.reply(text)
 
-# Price Command :: Check Cryptocurrency Price via CryptoCompare API 
+# Calculate Command :: Check Cryptocurrency Price & Calculate Amount of Crypto via CryptoCompare API 
 @app.on_message(Filters.command("calc"))
 async def calc_command(client, message):
     coinF = get_args(message)
@@ -76,6 +76,21 @@ async def calc_command(client, message):
     	text = "CALC : "+coinS+"\n`USD : $"+ str(round(usd, 3)) + "\nIDR : "+ str(formatrupiah(idr)) + "\nBTC : " + str(btc) + "`"
     except:
     	text = "Command Usage : /calc coin amount"
+    await message.reply(text)
+
+# Indodax Command :: Check Cryptocurrency Price via Indodax API 
+@app.on_message(Filters.command("indodax"))
+async def price_command(client, message):
+    coinF = get_args(message)
+    try:
+    	coinS = coinF[1].lower()
+    	requests_cache.install_cache('price_cache', backend='sqlite', expire_after=300)
+    	get = requests.get('https://indodax.com/api/'+coinS+'_idr/ticker')
+    	data = get.json()
+    	last = data['ticker']['last']
+    	text = "`"+coinS.upper()+" : "+str(formatrupiah(last))+"`"
+    except:
+    	text = "Command Usage : /indodax coin"
     await message.reply(text)
 
 # Restart Command :: Restart bot to get new edited things
