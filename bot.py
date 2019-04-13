@@ -1,10 +1,8 @@
 from pyrogram import Client, Filters
 import configparser
 import requests
-import sys
 import requests_cache
-import subprocess
-
+import sys, os
 # Define Function
 # get_args :: Get Argument after Command
 def get_args(msg):
@@ -53,7 +51,7 @@ async def price_command(client, message):
     	idr = data['DISPLAY'][coinS]['IDR']
     	usd = data['DISPLAY'][coinS]['USD']
     	text = "`"+coinS+" : "+usd['PRICE']+" | "+usd['CHANGEPCTDAY']+"%\n"+idr['PRICE']+" | "+idr['CHANGEPCTDAY']+"%\n"+btc['PRICE']+" | "+btc['CHANGEPCTDAY']+"%`"
-    except:
+    except (ValueError, IndexError) as e:
     	text = "Command Usage : /p coin"
     await message.reply(text)
 
@@ -72,7 +70,7 @@ async def calc_command(client, message):
     	idr = data['RAW'][coinS]['IDR']['PRICE'] * int(coinAM)
     	usd = data['RAW'][coinS]['USD']['PRICE'] * int(coinAM)
     	text = "CALC : "+coinS+"\n`USD : $"+ str(round(usd, 3)) + "\nIDR : "+ str(formatrupiah(idr)) + "\nBTC : " + str(btc) + "`"
-    except:
+    except (ValueError, IndexError) as e:
     	text = "Command Usage : /calc coin amount"
     await message.reply(text)
 
@@ -87,13 +85,14 @@ async def indodax_command(client, message):
     	data = get.json()
     	last = data['ticker']['last']
     	text = "`"+coinS.upper()+" : "+str(formatrupiah(last))+"`"
-    except:
-    	text = "Command Usagea : /indodax coin"
+    except (ValueError, IndexError) as e:
+    	text = "Command Usage : /indodax coin"
     await message.reply(text)
 
 # Restart Command :: Restart bot to get new edited things
 @app.on_message(Filters.command("restart"))
 async def restart_command(client, message):
     await message.reply("[ INFO ] BOT RESTARTING")
-    child = subprocess.Popen(['python','bot.py'],shell=True,stdout=subprocess.PIPE)
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
 app.run()
