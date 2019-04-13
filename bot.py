@@ -1,8 +1,6 @@
 from pyrogram import Client, Filters
 import configparser
 import requests
-import json
-import locale
 import os
 import sys
 import requests_cache
@@ -80,7 +78,7 @@ async def calc_command(client, message):
 
 # Indodax Command :: Check Cryptocurrency Price via Indodax API 
 @app.on_message(Filters.command("indodax"))
-async def price_command(client, message):
+async def indodax_command(client, message):
     coinF = get_args(message)
     try:
     	coinS = coinF[1].lower()
