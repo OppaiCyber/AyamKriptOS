@@ -1,9 +1,9 @@
 from pyrogram import Client, Filters
 import configparser
 import requests
-import os
 import sys
 import requests_cache
+import subprocess
 
 # Define Function
 # get_args :: Get Argument after Command
@@ -16,7 +16,7 @@ def get_args(msg):
 def formatrupiah(uang):
     y = str(uang)
     if len(y) <= 3 :
-        return 'Rp ' + y     
+        return 'Rp ' + y
     else :
         p = y[-3:]
         q = y[:-3]
@@ -40,7 +40,7 @@ async def start_command(client, message):
 async def ping_command(client, message):
     await message.reply("🏓 Pong!")
 
-# Price Command :: Check Cryptocurrency Price via CryptoCompare API 
+# Price Command :: Check Cryptocurrency Price via CryptoCompare API
 @app.on_message(Filters.command("p"))
 async def price_command(client, message):
     coinF = get_args(message)
@@ -57,7 +57,7 @@ async def price_command(client, message):
     	text = "Command Usage : /p coin"
     await message.reply(text)
 
-# Calculate Command :: Check Cryptocurrency Price & Calculate Amount of Crypto via CryptoCompare API 
+# Calculate Command :: Check Cryptocurrency Price & Calculate Amount of Crypto via CryptoCompare API
 @app.on_message(Filters.command("calc"))
 async def calc_command(client, message):
     coinF = get_args(message)
@@ -68,7 +68,7 @@ async def calc_command(client, message):
     	get = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms='+coinS+'&tsyms=BTC,USD,IDR')
     	data = get.json()
     	btc = data['RAW'][coinS]['BTC']['PRICE'] * int(coinAM)
-    	btc = "{:.8f}".format(float(btc)) # Special for BTC to Change Scientific Notation to Decimal 
+    	btc = "{:.8f}".format(float(btc)) # Special for BTC to Change Scientific Notation to Decimal
     	idr = data['RAW'][coinS]['IDR']['PRICE'] * int(coinAM)
     	usd = data['RAW'][coinS]['USD']['PRICE'] * int(coinAM)
     	text = "CALC : "+coinS+"\n`USD : $"+ str(round(usd, 3)) + "\nIDR : "+ str(formatrupiah(idr)) + "\nBTC : " + str(btc) + "`"
@@ -76,7 +76,7 @@ async def calc_command(client, message):
     	text = "Command Usage : /calc coin amount"
     await message.reply(text)
 
-# Indodax Command :: Check Cryptocurrency Price via Indodax API 
+# Indodax Command :: Check Cryptocurrency Price via Indodax API
 @app.on_message(Filters.command("indodax"))
 async def indodax_command(client, message):
     coinF = get_args(message)
@@ -88,16 +88,12 @@ async def indodax_command(client, message):
     	last = data['ticker']['last']
     	text = "`"+coinS.upper()+" : "+str(formatrupiah(last))+"`"
     except:
-    	text = "Command Usage : /indodax coin"
+    	text = "Command Usagea : /indodax coin"
     await message.reply(text)
 
 # Restart Command :: Restart bot to get new edited things
 @app.on_message(Filters.command("restart"))
 async def restart_command(client, message):
-    await message.reply("[ INFO ] BOT RESTARTED")
-    os.system('cls')  # For Windows
-    os.system('clear')  # For Linux/OS X
-    python = sys.executable
-    os.execl(python, python, *sys.argv)
-
+    await message.reply("[ INFO ] BOT RESTARTING")
+    child = subprocess.Popen(['python','bot.py'],shell=True,stdout=subprocess.PIPE)
 app.run()
