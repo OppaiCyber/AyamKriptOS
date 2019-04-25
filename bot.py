@@ -60,18 +60,18 @@ async def price_command(client, message):
 async def calc_command(client, message):
     coinF = get_args(message)
     try:
-    	coinS = coinF[1].upper()
-    	coinAM = coinF[2]
-    	requests_cache.install_cache('price_cache', backend='sqlite', expire_after=300)
-    	get = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms='+coinS+'&tsyms=BTC,USD,IDR')
-    	data = get.json()
-    	btc = data['RAW'][coinS]['BTC']['PRICE'] * int(coinAM)
-    	btc = "{:.8f}".format(float(btc)) # Special for BTC to Change Scientific Notation to Decimal
-    	idr = data['RAW'][coinS]['IDR']['PRICE'] * int(coinAM)
-    	usd = data['RAW'][coinS]['USD']['PRICE'] * int(coinAM)
-    	text = "CALC : "+coinS+"\n`USD : $"+ str(round(usd, 3)) + "\nIDR : "+ str(formatrupiah(idr)) + "\nBTC : " + str(btc) + "`"
+        coinS = coinF[1].upper()
+        coinAM = coinF[2]
+        requests_cache.install_cache('price_cache', backend='sqlite', expire_after=300)
+        get = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms='+coinS+'&tsyms=BTC,USD,IDR')
+        data = get.json()
+        btc = data['RAW'][coinS]['BTC']['PRICE'] * float(coinAM)
+        btc = "{:.8f}".format(float(btc)) # Special for BTC to Change Scientific Notation to Decimal
+        idr = data['RAW'][coinS]['IDR']['PRICE'] * float(coinAM)
+        usd = data['RAW'][coinS]['USD']['PRICE'] * float(coinAM)
+        text = "CALC : "+coinS+"\n`USD : $"+ str(round(usd, 3)) + "\nIDR : "+ str(formatrupiah(idr)) + "\nBTC : " + str(btc) + "`"
     except (ValueError, IndexError) as e:
-    	text = "Command Usage : /calc coin amount"
+        text = "Command Usage : /calc coin amount"
     await message.reply(text)
 
 # Indodax Command :: Check Cryptocurrency Price via Indodax API
