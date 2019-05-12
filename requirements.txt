@@ -1,0 +1,5 @@
+pyrogram[fast]
+requests
+requests-cache
+googletrans
+configparser
