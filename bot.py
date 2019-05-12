@@ -3,6 +3,7 @@ import configparser
 import requests
 import requests_cache
 import sys, os
+from googletrans import Translator
 # Define Function
 # get_args :: Get Argument after Command
 def get_args(msg):
@@ -51,7 +52,7 @@ async def price_command(client, message):
     	idr = data['DISPLAY'][coinS]['IDR']
     	usd = data['DISPLAY'][coinS]['USD']
     	text = "`"+coinS+" : "+usd['PRICE']+" | "+usd['CHANGEPCTDAY']+"%\n"+idr['PRICE']+" | "+idr['CHANGEPCTDAY']+"%\n"+btc['PRICE']+" | "+btc['CHANGEPCTDAY']+"%`"
-    except (ValueError, IndexError) as e:
+    except (ValueError, IndexError):
     	text = "Command Usage : /p coin"
     await message.reply(text)
 
@@ -70,7 +71,7 @@ async def calc_command(client, message):
         idr = data['RAW'][coinS]['IDR']['PRICE'] * float(coinAM)
         usd = data['RAW'][coinS]['USD']['PRICE'] * float(coinAM)
         text = "CALC : "+coinS+"\n`USD : $"+ str(round(usd, 3)) + "\nIDR : "+ str(formatrupiah(idr)) + "\nBTC : " + str(btc) + "`"
-    except (ValueError, IndexError) as e:
+    except (ValueError, IndexError):
         text = "Command Usage : /calc coin amount"
     await message.reply(text)
 
@@ -85,8 +86,22 @@ async def indodax_command(client, message):
     	data = get.json()
     	last = data['ticker']['last']
     	text = "`"+coinS.upper()+" : "+str(formatrupiah(last))+"`"
-    except (ValueError, IndexError) as e:
+    except (ValueError, IndexError):
     	text = "Command Usage : /indodax coin"
+    await message.reply(text)
+
+# Translate Command :: Automatically Translate Language via GTranslate
+@app.on_message(Filters.command("tr"))
+async def translate_command(client, message):
+    lang = get_args(message)
+    transText = message.reply_to_message.text
+    translator = Translator() #init translation
+    print(lang)
+    try:
+        doTr = translator.translate(transText, dest=lang[1])
+        text = doTr.text
+    except (ValueError, IndexError):
+        text = "Command Usage : /tr destLang "
     await message.reply(text)
 
 # Restart Command :: Restart bot to get new edited things
